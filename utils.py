@@ -1,9 +1,11 @@
 from tempfile import SpooledTemporaryFile
+from typing import List
 
 from fastapi import UploadFile
 from pypdf import PdfReader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from config import ALLOWED_FILE_TYPES
+from config import ALLOWED_FILE_TYPES, CHUNK_SIZE, CHUNK_OVERLAP
 
 
 def check_file_type(filename: str) -> bool:
@@ -26,3 +28,9 @@ async def extract_text_from_file(file: UploadFile) -> str:
         return "\n".join([page.extract_text() for page in pdf.pages])
 
     raise TypeError(f"Only {ALLOWED_FILE_TYPES} file types allowed")
+
+
+def split_text(text: str) -> List[str]:
+    splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
+    chunks = splitter.split_text(text)
+    return chunks
