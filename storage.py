@@ -15,3 +15,10 @@ def save_document(session_id: uuid.UUID, document: LoadedDocument) -> uuid.UUID:
         store[session_id] = {file_id: document}
 
     return file_id
+
+
+def get_document(session_id: uuid.UUID, document_id: uuid.UUID) -> LoadedDocument | None:
+    session_documents = store.get(session_id, {})
+    document = session_documents.get(document_id)
+
+    return document

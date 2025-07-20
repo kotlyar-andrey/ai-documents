@@ -4,10 +4,10 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, Cookie, Response, HTTPException
 
 from config import ALLOWED_FILE_TYPES
-from models import Cookies, LoadedDocument, LoadDocumentResponse
+from models import Cookies, LoadedDocument, LoadDocumentResponse, SummaryResponse
 from utils import check_file_type, extract_text_from_file, split_text
-from llm import get_embeddings
-from storage import save_document
+from llm import get_embeddings, get_document_summary
+from storage import save_document, get_document
 
 app = FastAPI()
 
@@ -47,3 +47,22 @@ async def load_document(file: UploadFile,
     response.set_cookie(key="session_id", value=str(session_id))
 
     return LoadDocumentResponse(message=f"Document '{file.filename}' was loaded", id=file_id)
+
+
+@app.get("/documents/{document_id}/summary", response_model=SummaryResponse)
+async def summary(document_id: uuid.UUID, cookies: Annotated[Cookies, Cookie()]):
+    session_id = cookies.session_id
+    if not session_id:
+        raise HTTPException(status_code=401, detail="session_id was not found")
+
+    document = get_document(session_id, document_id)
+    if not document:
+        raise HTTPException(status_code=404, detail=f"Document {document_id} was not found")
+
+    try:
+        result = await get_document_summary(document)
+    except Exception as e:
+        print(f"Logging an error in 'summary': {e}")
+        raise HTTPException(status_code=503, detail="External server was not respond")
+
+    return SummaryResponse(message=result)

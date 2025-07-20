@@ -19,3 +19,7 @@ class LoadedDocument(BaseModel):
 class LoadDocumentResponse(BaseModel):
     message: str
     id: UUID
+
+
+class SummaryResponse(BaseModel):
+    message: str

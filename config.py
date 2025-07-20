@@ -9,3 +9,5 @@ CHUNK_SIZE: int = 500
 CHUNK_OVERLAP: int = 50
 
 EMBEDDING_MODEL: str = "text-embedding-3-small"
+CHAT_MODEL: str = "gpt-4.1-nano"
+TEMPERATURE: float = 0.0
