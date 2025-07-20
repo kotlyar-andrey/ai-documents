@@ -1,7 +1,12 @@
+import os
+import getpass
 from typing import List
 from dotenv import load_dotenv
 
 load_dotenv()
+
+if "OPENAI_API_KEY" not in os.environ:
+    os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 
 ALLOWED_FILE_TYPES: List[str] = ['.pdf', '.txt']
 
