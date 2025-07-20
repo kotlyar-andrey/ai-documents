@@ -16,6 +16,10 @@ class LoadedDocument(BaseModel):
     embeddings: InMemoryVectorStore
 
 
+class ChatMessage(BaseModel):
+    message: str
+
+
 class LoadDocumentResponse(BaseModel):
     message: str
     id: UUID

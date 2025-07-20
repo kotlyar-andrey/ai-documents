@@ -22,3 +22,7 @@ def get_document(session_id: uuid.UUID, document_id: uuid.UUID) -> LoadedDocumen
     document = session_documents.get(document_id)
 
     return document
+
+
+def get_documents(session_id: uuid.UUID) -> Dict[uuid.UUID, LoadedDocument]:
+    return store.get(session_id, {})
