@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, Cookie, Response, HTTPException
 
 from config import ALLOWED_FILE_TYPES
-from models import Cookies, LoadedDocument, LoadDocumentResponse, SummaryResponse, ChatMessage
+from models import Cookies, LoadedDocument, LoadDocumentResponse, SummaryResponse, ChatMessage, GetAllDocumentsResponse
 from utils import check_file_type, extract_text_from_file, split_text
 from llm import get_embeddings, get_document_summary, moderate_message, get_relevant_embeddings, get_chat_answer
 from storage import save_document, get_document, get_documents
@@ -15,6 +15,16 @@ app = FastAPI()
 @app.get("/")
 def index():
     return {"data": "Server is working"}
+
+
+@app.get("/documents", response_model=GetAllDocumentsResponse)
+async def get_all_documents(cookies: Annotated[Cookies, Cookie()], response: Response):
+    session_id = cookies.session_id if cookies.session_id else uuid.uuid4()
+    docs = get_documents(session_id)
+
+    response.set_cookie(key="session_id", value=str(session_id), domain="localhost")
+
+    return GetAllDocumentsResponse(documents=[LoadDocumentResponse(id=id_, name=doc.name) for id_, doc in docs.items()])
 
 
 @app.post("/documents", response_model=LoadDocumentResponse)
