@@ -21,8 +21,13 @@ class ChatMessage(BaseModel):
 
 
 class LoadDocumentResponse(BaseModel):
-    message: str
+    message: str | None = None
     id: UUID
+    name: str
+
+
+class GetAllDocumentsResponse(BaseModel):
+    documents: List[LoadDocumentResponse]
 
 
 class SummaryResponse(BaseModel):

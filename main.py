@@ -44,9 +44,9 @@ async def load_document(file: UploadFile,
                                                        chunks=text_chunks,
                                                        embeddings=embeddings))
 
-    response.set_cookie(key="session_id", value=str(session_id))
+    response.set_cookie(key="session_id", value=str(session_id), domain="localhost")
 
-    return LoadDocumentResponse(message=f"Document '{file.filename}' was loaded", id=file_id)
+    return LoadDocumentResponse(message=f"Document '{file.filename}' was loaded", id=file_id, name=file.filename)
 
 
 @app.get("/documents/{document_id}/summary", response_model=SummaryResponse)
