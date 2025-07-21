@@ -1,7 +1,8 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import FastAPI, UploadFile, Cookie, Response, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from config import ALLOWED_FILE_TYPES
 from models import Cookies, LoadedDocument, LoadDocumentResponse, SummaryResponse, ChatMessage, GetAllDocumentsResponse
@@ -10,6 +11,19 @@ from llm import get_embeddings, get_document_summary, moderate_message, get_rele
 from storage import save_document, get_document, get_documents
 
 app = FastAPI()
+
+origins: List[str] = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
