@@ -26,3 +26,9 @@ def get_document(session_id: uuid.UUID, document_id: uuid.UUID) -> LoadedDocumen
 
 def get_documents(session_id: uuid.UUID) -> Dict[uuid.UUID, LoadedDocument]:
     return store.get(session_id, {})
+
+
+def delete_document(session_id: uuid.UUID, document_id: uuid.UUID) -> None:
+    documents = get_documents(session_id)
+    if document_id in documents:
+        documents.pop(document_id)

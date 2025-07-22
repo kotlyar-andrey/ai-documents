@@ -8,7 +8,7 @@ from config import ALLOWED_FILE_TYPES
 from models import Cookies, LoadedDocument, LoadDocumentResponse, SummaryResponse, ChatMessage, GetAllDocumentsResponse
 from utils import check_file_type, extract_text_from_file, split_text
 from llm import get_embeddings, get_document_summary, moderate_message, get_relevant_embeddings, get_chat_answer
-from storage import save_document, get_document, get_documents
+from storage import save_document, get_document, get_documents, delete_document
 
 app = FastAPI()
 
@@ -92,6 +92,15 @@ async def summary(document_id: uuid.UUID, cookies: Annotated[Cookies, Cookie()])
     return SummaryResponse(message=result)
 
 
+@app.delete("/documents/{document_id}")
+async def remove_document(document_id: uuid.UUID, cookies: Annotated[Cookies, Cookie()]):
+    session_id = cookies.session_id
+    if not session_id:
+        raise HTTPException(status_code=401, detail="session_id was not found")
+
+    delete_document(session_id, document_id)
+
+
 @app.post("/chat", response_model=ChatMessage)
 async def chat(data: ChatMessage, cookies: Annotated[Cookies, Cookie()]):
     message = data.message
@@ -116,5 +125,5 @@ async def chat(data: ChatMessage, cookies: Annotated[Cookies, Cookie()]):
     relevant_chunks = [doc[0].page_content for doc in relevant_embeddings]
 
     answer = await get_chat_answer(message, relevant_chunks)
-    
+
     return ChatMessage(message=answer)
