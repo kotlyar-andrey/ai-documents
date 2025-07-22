@@ -1,7 +1,9 @@
 services:
   backend:
-    build: .
-    container_name: ai_documents
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_documents_backend
     ports:
       - "8000:8000"
     environment:
@@ -10,3 +12,14 @@ services:
      - .:/app
     env_file:
       - .env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_documents_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_started
