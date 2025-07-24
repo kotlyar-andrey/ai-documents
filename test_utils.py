@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+from tempfile import SpooledTemporaryFile
 
-from utils import check_file_type, extract_text_from_file
+from utils import check_file_type, extract_text_from_file, split_text
 
 
 @pytest.fixture
@@ -52,25 +53,29 @@ async def test_extract_text_valid_pdf(mock_spooled_file, mock_pdf_reader, mock_u
     mock_upload_file.filename = "test.pdf"
     mock_upload_file.read.return_value = b'Some content'
 
-    mock_spooled_file_instance = MagicMock()
-    mock_spooled_file.return_value = mock_spooled_file_instance
+    tmp_file = MagicMock(spec=SpooledTemporaryFile)
+    mock_spooled_file.return_value = tmp_file
 
-    mock_pdf_reader_instance = mock_pdf_reader.return_value
     page1 = MagicMock()
     page1.extract_text.return_value = "text from page 1"
     page2 = MagicMock()
     page2.extract_text.return_value = "text from page 2"
-    mock_pdf_reader_instance.pages = [page1, page2]
+
+    pdf = MagicMock()
+    pdf.pages = [page1, page2]
+    mock_pdf_reader.return_value = pdf
 
     result = await extract_text_from_file(mock_upload_file)
 
     assert result == "text from page 1\ntext from page 2"
+    tmp_file.write.assert_called_once_with(b'Some content')
+    mock_pdf_reader.assert_called_once_with(tmp_file)
 
 
 @pytest.mark.asyncio
 @patch("utils.PdfReader")
 @patch("utils.SpooledTemporaryFile")
-async def test_extract_text_valid_pdf(mock_spooled_file, mock_pdf_reader, mock_upload_file):
+async def test_extract_text_invalid_pdf(mock_spooled_file, mock_pdf_reader, mock_upload_file):
     """Ошибка чтения pdf файла """
     mock_upload_file.filename = "test.pdf"
     mock_upload_file.read.return_value = b'Some content'
@@ -82,3 +87,16 @@ async def test_extract_text_valid_pdf(mock_spooled_file, mock_pdf_reader, mock_u
 
     with pytest.raises(Exception, match="Error message"):
         await extract_text_from_file(mock_upload_file)
+
+
+@patch("utils.RecursiveCharacterTextSplitter")
+def test_split_text(mock_recursive_splitter):
+    text = "Some text"
+
+    mock_recursive_splitter.return_value.split_text.return_value = ["Some", "text"]
+
+    result = split_text(text)
+
+    mock_recursive_splitter.assert_called_once()
+    mock_recursive_splitter.return_value.split_text.assert_called_once_with(text)
+    assert result == ["Some", "text"]
