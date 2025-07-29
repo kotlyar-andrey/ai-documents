@@ -1,7 +1,7 @@
 import uuid
 from typing import Dict
 
-from models import LoadedDocument
+from app.models import LoadedDocument
 
 # Хранит id сессии, по которому доступен словарь с файлами, которые тоже доступны по id
 store: Dict[uuid.UUID, Dict[uuid.UUID, LoadedDocument]] = {}
@@ -17,7 +17,9 @@ def save_document(session_id: uuid.UUID, document: LoadedDocument) -> uuid.UUID:
     return file_id
 
 
-def get_document(session_id: uuid.UUID, document_id: uuid.UUID) -> LoadedDocument | None:
+def get_document(
+    session_id: uuid.UUID, document_id: uuid.UUID
+) -> LoadedDocument | None:
     session_documents = store.get(session_id, {})
     document = session_documents.get(document_id)
 

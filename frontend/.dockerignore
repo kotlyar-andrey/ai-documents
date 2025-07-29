@@ -1,0 +1,7 @@
+.idea/
+.venv/
+env/
+venv/
+.env
+node_modules/
+.git/

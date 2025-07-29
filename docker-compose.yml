@@ -1,15 +1,15 @@
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: ai_documents_backend
     ports:
-      - "8000:8000"
+      - '8000:8000'
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
-     - .:/app
+      - ./backend:/app
     env_file:
       - .env
 
@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     container_name: ai_documents_frontend
     ports:
-      - "5173:5173"
+      - '5173:5173'
     depends_on:
       backend:
         condition: service_started

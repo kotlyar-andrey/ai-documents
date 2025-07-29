@@ -8,7 +8,7 @@ load_dotenv()
 if "OPENAI_API_KEY" not in os.environ:
     os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
 
-ALLOWED_FILE_TYPES: List[str] = ['.pdf', '.txt']
+ALLOWED_CONTENT_TYPES: List[str] = ['text/plain', 'application/pdf']
 
 CHUNK_SIZE: int = 500
 CHUNK_OVERLAP: int = 50

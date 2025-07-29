@@ -1,8 +1,8 @@
-from uuid import UUID
 from typing import List
+from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
 from langchain_core.vectorstores import InMemoryVectorStore
+from pydantic import BaseModel, ConfigDict
 
 
 class Cookies(BaseModel):
@@ -11,7 +11,7 @@ class Cookies(BaseModel):
 
 class LoadedDocument(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    name: str
+    name: str | None
     chunks: List[str]
     embeddings: InMemoryVectorStore
 
@@ -23,7 +23,7 @@ class ChatMessage(BaseModel):
 class LoadDocumentResponse(BaseModel):
     message: str | None = None
     id: UUID
-    name: str
+    name: str | None
 
 
 class GetAllDocumentsResponse(BaseModel):
