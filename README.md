@@ -14,7 +14,7 @@ cd ai-documents</pre>
 `docker compose up --build`
 
 backend будет доступен по адресу `0.0.0.0:8000`  
-frontend будет доступ по адресу `localhost:5173`
+frontend будет доступен по адресу `localhost:5173`
 
 ## Доступные эндпоинты
 
